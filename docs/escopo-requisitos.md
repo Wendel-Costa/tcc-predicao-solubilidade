@@ -333,6 +333,63 @@ O projeto será considerado tecnicamente concluído quando:
 
 A ausência de desempenho superior à baseline não invalida automaticamente o trabalho, desde que a investigação tenha sido conduzida e documentada adequadamente.
 
+
+## 11. Requisitos funcionais
+
+Os requisitos funcionais descrevem os serviços e comportamentos que o sistema deverá oferecer.
+
+| ID | Requisito | Descrição |
+|---|---|---|
+| RF01 | Entrada molecular | O sistema deverá permitir o envio de uma estrutura molecular em formato SMILES. |
+| RF02 | Entrada de temperatura | O sistema deverá permitir informar a temperatura em graus Celsius, utilizando inicialmente 25 °C como padrão quando não informada, sujeito à validação da cobertura experimental. |
+| RF03 | Validação molecular | O sistema deverá validar as estruturas SMILES utilizando o RDKit e rejeitar estruturas inválidas. |
+| RF04 | Extração de atributos | O sistema deverá calcular os descritores moleculares definidos pelo protocolo científico e incorporar a temperatura. |
+| RF05 | Predição | O backend deverá utilizar o pipeline de aprendizado de máquina previamente treinado para estimar a solubilidade. |
+| RF06 | Apresentação do resultado | O sistema deverá apresentar o resultado na escala LogS (mol/L), a temperatura utilizada, a versão do modelo e os avisos pertinentes. |
+| RF07 | Verificação de disponibilidade | A API deverá disponibilizar um endpoint para verificar sua disponibilidade e a do modelo. |
+| RF08 | Informações do modelo | A API deverá disponibilizar informações sobre o modelo utilizado, os dados de treinamento, os atributos e as métricas disponíveis. |
+| RF09 | Tratamento de erros | O sistema deverá apresentar mensagens estruturadas e compreensíveis para entradas inválidas e falhas de processamento. |
+| RF10 | Ausência de histórico | O sistema não deverá persistir o histórico das predições realizadas pelos usuários. |
+
+## 12. Requisitos não funcionais
+
+Os requisitos não funcionais estabelecem condições de qualidade e restrições que deverão ser respeitadas durante o desenvolvimento.
+
+| ID | Requisito | Descrição |
+|---|---|---|
+| RNF01 | Consistência científica | O modelo principal deverá utilizar exclusivamente registros experimentais referentes ao metanol puro. |
+| RNF02 | Consistência de atributos | A geração dos descritores deverá utilizar a mesma implementação durante o treinamento e a inferência, preservando os nomes, a quantidade e a ordem das características. |
+| RNF03 | Integridade experimental | A divisão dos dados deverá impedir que a mesma molécula apareça simultaneamente nos conjuntos de treinamento e teste. |
+| RNF04 | Reprodutibilidade | Os procedimentos de preparação, treinamento e avaliação deverão registrar suas configurações, versões e sementes aleatórias. |
+| RNF05 | Separação de responsabilidades | O treinamento dos modelos deverá ocorrer offline, sem execução durante as requisições da API. |
+| RNF06 | Manutenibilidade | Os módulos deverão possuir responsabilidades delimitadas, evitando duplicação de código e abstrações desnecessárias. |
+| RNF07 | Acessibilidade | A interface deverá possuir navegação por teclado, identificação dos campos e contraste adequado. |
+| RNF08 | Responsividade | A aplicação deverá funcionar em diferentes tamanhos de tela. |
+| RNF09 | Tratamento de falhas | Mensagens de erro não deverão expor stack traces ou informações internas desnecessárias. |
+| RNF10 | Reprodutibilidade do ambiente | A instalação deverá ser documentada e utilizar um ambiente virtual e um arquivo centralizado de dependências. |
+
+## 13. Critérios iniciais de aceitação
+
+O sistema deverá atender aos seguintes critérios para ser considerado funcional:
+
+- Receber uma estrutura SMILES válida e uma temperatura.
+- Rejeitar estruturas moleculares inválidas.
+- Converter corretamente a temperatura de Celsius para Kelvin.
+- Calcular os atributos moleculares de maneira consistente.
+- Utilizar um pipeline previamente treinado.
+- Retornar uma estimativa de LogS (mol/L).
+- Informar a versão do modelo e a temperatura utilizada.
+- Apresentar avisos sobre as limitações da estimativa.
+- Tratar a indisponibilidade do artefato de modelo.
+- Apresentar resultados por meio de uma interface web funcional.
+
+A validação científica dependerá adicionalmente da auditoria dos dados, da prevenção de vazamento entre conjuntos e da avaliação dos modelos por métricas estatísticas.
+
+Não será estabelecido um valor mínimo de desempenho como condição antecipada de aceitação.
+
+Os critérios serão verificados por meio de testes automatizados e testes integrados, além da análise dos resultados científicos reais.
+
+
 ---
 
 **Equipe:** Wendel, Erika e Gabriel.
