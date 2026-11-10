@@ -101,6 +101,8 @@ A versão de referência do projeto é o registro específico BigSolDB 2.0, iden
 
 `10.5281/zenodo.15094979`
 
+### 5.1. Identificação dos arquivos originais
+
 O Zenodo apresenta os seguintes checksums MD5 para os arquivos da versão consultada:
 
 | Arquivo | MD5 informado pelo Zenodo |
