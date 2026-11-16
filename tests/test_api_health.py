@@ -84,8 +84,9 @@ def test_metodo_post_no_health_nao_e_permitido(client):
     assert resposta.status_code == 405
 
 
+
 def test_openapi_documenta_health_e_503(client):
-    """Confere a documentação automática da API."""
+    """Confere a documentação do endpoint health."""
 
     resposta = client.get("/openapi.json")
 
@@ -93,13 +94,15 @@ def test_openapi_documenta_health_e_503(client):
 
     rotas = resposta.json()["paths"]
 
+    # Confirma que o endpoint health continua documentado.
     assert "/api/health" in rotas
 
-    assert (
-        "503"
-        in rotas["/api/health"]["get"]["responses"]
-    )
+    respostas_health = rotas[
+        "/api/health"
+    ]["get"]["responses"]
 
-    # Essas rotas pertencem a commits posteriores.
+    # A resposta HTTP 503 deve permanecer documentada.
+    assert "503" in respostas_health
+
+    # O endpoint de predição será implementado no C25.
     assert "/api/predict" not in rotas
-    assert "/api/model-info" not in rotas

@@ -97,6 +97,33 @@ As métricas deverão corresponder ao experimento documentado e não poderão se
 
 Se o artefato ou seus metadados não estiverem disponíveis, a API deverá retornar HTTP 503.
 
+### Resposta quando o modelo está indisponível
+
+**HTTP 503 Service Unavailable**
+
+```json
+{
+  "error": {
+    "code": "model_unavailable",
+    "message": "Metadados do modelo indisponíveis."
+  }
+}
+```
+
+Enquanto o predictor não estiver integrado, o endpoint
+não apresentará metadados simulados ou métricas
+experimentais sem vínculo com um artefato carregado.
+
+A implementação inicial utilizará uma dependência
+substituível nos testes. A integração com os metadados
+reais do pipeline será realizada posteriormente.
+
+A faixa de temperatura apresentada nos metadados
+representa a faixa observada no treinamento e não
+constitui garantia de validade preditiva em todo
+o intervalo.
+
+
 **Observação:** a faixa de temperatura de treinamento descreve os dados utilizados no ajuste do modelo. Ela não deverá ser apresentada automaticamente como garantia de validade da predição em toda essa faixa.
 
 ---
