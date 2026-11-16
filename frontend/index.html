@@ -1,0 +1,98 @@
+
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Protótipo acadêmico para estimar a solubilidade de moléculas orgânicas em metanol.">
+  <title>Predição de solubilidade em metanol</title>
+</head>
+<body>
+  <a href="#conteudo">Ir para o conteúdo principal</a>
+
+  <header>
+    <p>Projeto de TCC · Predição de solubilidade</p>
+    <h1>Solubilidade de compostos orgânicos em metanol</h1>
+    <p>Informe a estrutura molecular no formato SMILES e, opcionalmente, a temperatura em graus Celsius.</p>
+  </header>
+
+  <main id="conteudo">
+    <section aria-labelledby="titulo-formulario">
+      <h2 id="titulo-formulario">Dados da molécula</h2>
+      <p id="orientacao-formulario">Apenas metanol puro é considerado como solvente. A temperatura padrão ainda não foi definida.</p>
+
+      <form id="predict-form" aria-describedby="orientacao-formulario">
+        <div>
+          <label for="smiles">SMILES da molécula (obrigatório)</label>
+          <input
+            id="smiles"
+            name="smiles"
+            type="text"
+            placeholder="Ex.: CCO"
+            autocomplete="off"
+            autocapitalize="off"
+            spellcheck="false"
+            aria-describedby="ajuda-smiles"
+            required
+          >
+          <p id="ajuda-smiles">Exemplo: <code>CCO</code> representa o etanol.</p>
+        </div>
+
+        <div>
+          <label for="temperature_c">Temperatura (°C) — opcional</label>
+          <input
+            id="temperature_c"
+            name="temperature_c"
+            type="number"
+            step="any"
+            inputmode="decimal"
+            aria-describedby="ajuda-temperatura"
+          >
+          <p id="ajuda-temperatura">Deixe em branco até que o padrão de temperatura seja definido no protocolo científico.</p>
+        </div>
+
+        <button id="predict-button" type="submit" disabled>Calcular estimativa</button>
+        <p id="form-status" role="status" aria-live="polite">Formulário demonstrativo: a predição será ativada após a integração com a API.</p>
+      </form>
+    </section>
+
+    <section id="loading-state" role="status" aria-live="polite" hidden>
+      <h2>Processando</h2>
+      <p>Calculando estimativa de solubilidade…</p>
+    </section>
+
+    <section id="error-panel" role="alert" aria-labelledby="titulo-erro" hidden>
+      <h2 id="titulo-erro">Não foi possível calcular</h2>
+      <p id="error-message"></p>
+    </section>
+
+    <section id="result-panel" aria-labelledby="titulo-resultado" hidden>
+      <h2 id="titulo-resultado">Resultado da estimativa</h2>
+      <dl>
+        <dt>Solubilidade estimada — LogS(mol/L)</dt>
+        <dd><output id="result-log-s" for="smiles temperature_c"></output></dd>
+
+        <dt>Temperatura informada (°C)</dt>
+        <dd id="result-temperature-c"></dd>
+
+        <dt>Temperatura usada no modelo (K)</dt>
+        <dd id="result-temperature-k"></dd>
+
+        <dt>Solvente</dt>
+        <dd>Metanol</dd>
+
+        <dt>Versão do modelo</dt>
+        <dd id="result-model-version"></dd>
+      </dl>
+
+      <h3>Avisos e limitações</h3>
+      <ul id="result-warnings"></ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>Esta ferramenta fornece estimativas estatísticas; não substitui medições experimentais.</p>
+    <p>Dados científicos de referência: <a href="https://doi.org/10.5281/zenodo.15094979">BigSolDB 2.0</a>.</p>
+  </footer>
+</body>
+</html>
