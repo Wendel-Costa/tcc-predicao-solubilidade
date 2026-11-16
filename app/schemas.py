@@ -3,7 +3,7 @@
 
 Não executa inferência e não define a faixa de aplicação do modelo.
 """
-
+from datetime import date, datetime
 import math
 from typing import Literal
 
@@ -12,6 +12,7 @@ from pydantic import (
     ConfigDict,
     Field,
     field_validator,
+    model_validator,
 )
 from rdkit import Chem
 
@@ -113,3 +114,76 @@ class ErrorResponse(BaseModel):
     """Estrutura uniforme para respostas de erro."""
 
     error: ErrorDetail
+
+
+class ModelMetrics(BaseModel):
+    """Métricas reais registradas no experimento."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    mae: float = Field(ge=0, allow_inf_nan=False)
+    rmse: float = Field(ge=0, allow_inf_nan=False)
+    r2: float = Field(allow_inf_nan=False)
+
+
+class TrainingTemperatureRangeK(BaseModel):
+    """Faixa observada no treinamento, expressa em Kelvin."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    min: float = Field(gt=0, allow_inf_nan=False)
+    max: float = Field(gt=0, allow_inf_nan=False)
+
+    @model_validator(mode="after")
+    def validar_intervalo(self):
+        if self.max < self.min:
+            raise ValueError(
+                "Temperatura máxima deve ser maior ou igual à mínima"
+            )
+
+        return self
+
+
+class ModelInfoResponse(BaseModel):
+    """Contrato de metadados do modelo disponível na API."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    model_version: str = Field(min_length=1)
+    dataset_name: str = Field(min_length=1)
+    dataset_version: str = Field(min_length=1)
+    dataset_doi: str = Field(min_length=1)
+
+    target: Literal["LogS(mol/L)"]
+    solvent: Literal["methanol"]
+
+    feature_names: list[str] = Field(min_length=1)
+
+    trained_at: date | datetime
+
+    metrics: ModelMetrics
+
+    training_temperature_range_k: TrainingTemperatureRangeK
+
+    software_versions: dict[str, str] = Field(
+        min_length=1
+    )
+
+    @model_validator(mode="after")
+    def validar_features(self):
+        if any(
+            not nome.strip()
+            for nome in self.feature_names
+        ):
+            raise ValueError(
+                "Nomes de atributos não podem ser vazios"
+            )
+
+        if len(set(self.feature_names)) != len(
+            self.feature_names
+        ):
+            raise ValueError(
+                "Nomes de atributos não podem se repetir"
+            )
+
+        return self

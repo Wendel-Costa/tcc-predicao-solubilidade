@@ -6,6 +6,13 @@ from typing import Annotated, Literal
 from fastapi import Depends, FastAPI, Response, status
 from pydantic import BaseModel
 
+from fastapi.responses import JSONResponse
+
+from app.schemas import (
+    ErrorDetail,
+    ErrorResponse,
+    ModelInfoResponse,
+)
 
 # Cria a aplicação FastAPI.
 app = FastAPI(
@@ -77,3 +84,53 @@ def health(
         model_available=pronto,
         model_version=versao if pronto else None,
     )
+
+
+def consultar_metadados_modelo() -> ModelInfoResponse | None:
+    """Consulta os metadados do modelo integrado.
+
+    Integração real prevista para o C24.
+
+    Enquanto não existir um artefato carregado e validado,
+    a API não disponibiliza informações fictícias.
+    """
+    return None
+
+
+@app.get(
+    "/api/model-info",
+    response_model=ModelInfoResponse,
+    responses={
+        503: {
+            "model": ErrorResponse,
+            "description": (
+                "Metadados do modelo indisponíveis"
+            ),
+        },
+    },
+    tags=["modelo"],
+)
+def model_info(
+    metadados: Annotated[
+        ModelInfoResponse | None,
+        Depends(consultar_metadados_modelo),
+    ],
+) -> ModelInfoResponse | JSONResponse:
+    """Retorna os metadados reais ou HTTP 503."""
+
+    if metadados is None:
+        erro = ErrorResponse(
+            error=ErrorDetail(
+                code="model_unavailable",
+                message=(
+                    "Metadados do modelo indisponíveis."
+                ),
+            )
+        )
+
+        return JSONResponse(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            content=erro.model_dump(),
+        )
+
+    return metadados
