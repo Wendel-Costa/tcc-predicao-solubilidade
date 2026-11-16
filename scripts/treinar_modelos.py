@@ -54,6 +54,25 @@ def construir_atributos(dados: pd.DataFrame) -> pd.DataFrame:
     )
 
 
+def criar_modelos(semente: int = 42) -> dict:
+    """Cria os modelos com o protocolo experimental do C16."""
+
+    return {
+        "DummyRegressor": DummyRegressor(
+            strategy="median",
+        ),
+        "Ridge": Pipeline([
+            ("escala", StandardScaler()),
+            ("modelo", Ridge(alpha=1.0)),
+        ]),
+        "RandomForest": RandomForestRegressor(
+            n_estimators=200,
+            min_samples_leaf=2,
+            random_state=semente,
+            n_jobs=1,
+        ),
+    }
+
 def comparar_modelos(
     dados: pd.DataFrame,
     semente: int = 42,
@@ -120,21 +139,7 @@ def comparar_modelos(
     y_validacao = validacao[ALVO].to_numpy(dtype=float)
 
     # 5. Definir os modelos.
-    modelos = {
-        "DummyRegressor": DummyRegressor(
-            strategy="median",
-        ),
-        "Ridge": Pipeline([
-            ("escala", StandardScaler()),
-            ("modelo", Ridge(alpha=1.0)),
-        ]),
-        "RandomForest": RandomForestRegressor(
-            n_estimators=200,
-            min_samples_leaf=2,
-            random_state=semente,
-            n_jobs=1,
-        ),
-    }
+    modelos = criar_modelos(semente)
 
     # 6. Treinar e avaliar na mesma validação.
     resultados = {}
