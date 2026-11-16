@@ -3,3 +3,4 @@ pandas>=2.2,<4.0
 rdkit>=2025.3,<2027.0
 pytest>=8.3,<10
 scikit-learn>=1.6,<2.0
+matplotlib>=3.8,<4.0
