@@ -1,0 +1,229 @@
+
+/* C22: apresentação do frontend, sem predições. */
+
+:root {
+  color-scheme: light;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  line-height: 1.55;
+  color: #1c2934;
+  background: #f3f6f8;
+  font-synthesis: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+/* Link de acessibilidade para o conteúdo principal. */
+body > a[href="#conteudo"] {
+  position: absolute;
+  left: 1rem;
+  top: -5rem;
+  z-index: 10;
+  padding: 0.7rem 1rem;
+  border-radius: 0.5rem;
+  background: #fff;
+  color: #133b55;
+}
+
+body > a[href="#conteudo"]:focus {
+  top: 1rem;
+}
+
+/* Cabeçalho. */
+header {
+  background: #153f59;
+  color: #fff;
+  padding: 3rem max(1.5rem, calc((100vw - 900px) / 2));
+}
+
+header h1 {
+  max-width: 750px;
+  margin: 0.3rem 0;
+  font-size: clamp(1.8rem, 4vw, 2.75rem);
+  line-height: 1.15;
+}
+
+header p {
+  max-width: 720px;
+  margin: 0.6rem 0;
+}
+
+/* Área principal e cartões. */
+main {
+  width: min(100% - 2rem, 900px);
+  margin: 2rem auto;
+  display: grid;
+  gap: 1.25rem;
+}
+
+main > section {
+  background: white;
+  border: 1px solid #d8e2e8;
+  border-radius: 0.85rem;
+  padding: clamp(1.1rem, 3vw, 2rem);
+  box-shadow: 0 6px 20px rgb(29 59 80 / 5%);
+}
+
+h2 {
+  margin-top: 0;
+  font-size: 1.4rem;
+}
+
+h3 {
+  font-size: 1.07rem;
+}
+
+/* Formulário. */
+form {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
+
+form > div {
+  display: grid;
+  gap: 0.35rem;
+}
+
+label {
+  font-weight: 650;
+}
+
+input {
+  width: 100%;
+  min-height: 2.9rem;
+  padding: 0.65rem 0.8rem;
+  background: #fff;
+  border: 1px solid #8298a8;
+  border-radius: 0.55rem;
+  font: inherit;
+  color: inherit;
+}
+
+input:focus-visible,
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid #e4a34c;
+  outline-offset: 2px;
+}
+
+input[aria-invalid="true"] {
+  border-color: #a2262f;
+}
+
+form p {
+  margin: 0;
+  color: #445b69;
+  font-size: 0.92rem;
+}
+
+/* Botão. */
+button {
+  justify-self: start;
+  min-height: 2.9rem;
+  padding: 0.7rem 1.2rem;
+  font: inherit;
+  font-weight: 650;
+  color: #fff;
+  background: #146184;
+  border: 0;
+  border-radius: 0.55rem;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  background: #104d6a;
+}
+
+button:disabled {
+  background: #657986;
+  color: #fff;
+  cursor: not-allowed;
+}
+
+#form-status {
+  margin-top: -0.4rem;
+}
+
+#error-panel {
+  border-left: 5px solid #b32e39;
+}
+
+#result-panel {
+  border-left: 5px solid #146184;
+}
+
+#result-panel dl {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: 1rem;
+  row-gap: 0.7rem;
+}
+
+#result-panel dt {
+  font-weight: 650;
+}
+
+#result-panel dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Garante que seções ocultas permaneçam ocultas. */
+[hidden] {
+  display: none !important;
+}
+
+/* Rodapé. */
+footer {
+  padding: 1.5rem max(1rem, calc((100vw - 900px) / 2));
+  color: #405867;
+  font-size: 0.9rem;
+}
+
+a {
+  color: #126088;
+}
+
+footer a {
+  text-decoration-thickness: 2px;
+}
+
+/* Adaptação para celulares. */
+@media (max-width: 600px) {
+  header {
+    padding: 2rem 1rem;
+  }
+
+  main {
+    width: min(100% - 1rem, 900px);
+    margin: 1rem auto;
+  }
+
+  button {
+    width: 100%;
+  }
+
+  #result-panel dl {
+    grid-template-columns: 1fr;
+    gap: 0.2rem;
+  }
+
+  #result-panel dd {
+    margin-bottom: 0.7rem;
+  }
+}
+
+/* Respeita a preferência por movimento reduzido. */
+@media (prefers-reduced-motion: no-preference) {
+  button {
+    transition: background-color 150ms ease;
+  }
+}
