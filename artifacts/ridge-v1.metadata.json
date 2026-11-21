@@ -1,0 +1,82 @@
+{
+  "model_info": {
+    "model_version": "ridge-v1",
+    "dataset_name": "BigSolDB",
+    "dataset_version": "2.0",
+    "dataset_doi": "10.5281/zenodo.15094979",
+    "target": "LogS(mol/L)",
+    "solvent": "methanol",
+    "feature_names": [
+      "MolWt",
+      "MolLogP",
+      "TPSA",
+      "NumHDonors",
+      "NumHAcceptors",
+      "NumRotatableBonds",
+      "HeavyAtomCount",
+      "RingCount",
+      "FractionCSP3",
+      "Temperature_K"
+    ],
+    "trained_at": "2026-11-21",
+    "metrics": {
+      "mae": 0.7971669453887359,
+      "rmse": 0.9781224026843227,
+      "r2": 0.2139214904965785
+    },
+    "training_temperature_range_k": {
+      "min": 248.2,
+      "max": 354.15
+    },
+    "software_versions": {
+      "python": "3.14.8",
+      "numpy": "2.5.4",
+      "pandas": "3.1.1",
+      "rdkit": "2026.09.2",
+      "scikit-learn": "1.9.1",
+      "joblib": "1.6.0"
+    }
+  },
+  "selection": {
+    "criterion": "menor MAE em validação interna agrupada por molécula",
+    "selected_model": "Ridge",
+    "seed": 42,
+    "comparison": {
+      "semente": 42,
+      "registros_ajuste": 5285,
+      "registros_validacao": 1334,
+      "moleculas_ajuste": 542,
+      "moleculas_validacao": 136,
+      "moleculas_compartilhadas": 0,
+      "modelos": {
+        "DummyRegressor": {
+          "MAE": 0.8945033301987722,
+          "RMSE": 1.103567797246497,
+          "R2": -0.0006392853028394097
+        },
+        "Ridge": {
+          "MAE": 0.7971669453887359,
+          "RMSE": 0.9781224026843227,
+          "R2": 0.2139214904965785
+        },
+        "RandomForest": {
+          "MAE": 0.820020505929288,
+          "RMSE": 1.037150017318041,
+          "R2": 0.11618235215508022
+        }
+      }
+    },
+    "metrics_context": "validação interna anterior ao reajuste completo"
+  },
+  "training": {
+    "source_filename": "treino.csv",
+    "source_sha256": "0f272a13c2a7c5f0469abf64f098cceec2c82a0c586eae6def1c7491752178d9",
+    "records": 6619,
+    "molecules": 678,
+    "artifact_filename": "ridge-v1.joblib",
+    "artifact_sha256": "f362ca5d4b01e834901bb446a5029b1f9fb7a1636c7e87374dfd1fbb5e96bf5f",
+    "estimator": "Pipeline(StandardScaler, Ridge(alpha=1.0))",
+    "feature_builder": "app.chemistry.extrair_atributos",
+    "test_final_used": false
+  }
+}
