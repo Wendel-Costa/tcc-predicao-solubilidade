@@ -91,46 +91,51 @@ def test_formulario_e_elementos_necessarios_existem(arquivos):
             in js
         )
 
-
 def test_botao_inicialmente_desabilitado(arquivos):
     elementos, _, js = arquivos
 
     botoes = [
-        a
-        for tag, a in elementos
+        atributos
+        for tag, atributos in elementos
         if tag == "button"
-        and a.get("id") == "predict-button"
+        and atributos.get("id") == "predict-button"
     ]
 
     assert len(botoes) == 1
     assert "disabled" in botoes[0]
 
-    assert (
-        'botao.textContent = "Verificar entradas"'
-        in js
-    )
+    assert "Calcular estimativa" in js
+    assert "botao.disabled = enviando" in js
 
-
-def test_validacao_local_sem_predicao_ou_requisicao_http(arquivos):
+def test_validacao_local_e_requisicao_http(arquivos):
     _, _, js = arquivos
 
     assert "Number.isFinite" in js
     assert "valor > -273.15" in js
     assert "preventDefault()" in js
 
-    assert "fetch(" not in js
+    # C27: integração real com a mesma origem.
+    assert 'fetch("/api/predict"' in js
+    assert 'method: "POST"' in js
+    assert "JSON.stringify" in js
+
     assert "XMLHttpRequest" not in js
     assert "localStorage" not in js
 
 
-def test_resultado_e_carregamento_permanecem_ocultos(arquivos):
+def test_resultado_e_carregamento_mudam_de_estado(arquivos):
     _, _, js = arquivos
 
+    # Ocultos quando não devem aparecer.
     assert "painelResultado.hidden = true" in js
     assert "painelCarregamento.hidden = true" in js
 
-    assert "painelResultado.hidden = false" not in js
-    assert "painelCarregamento.hidden = false" not in js
+    # Exibidos durante as etapas apropriadas.
+    assert "painelResultado.hidden = false" in js
+    assert "painelCarregamento.hidden = false" in js
+
+    # A edição cancela uma solicitação pendente.
+    assert "controladorAtual.abort()" in js
 
 
 def test_mensagens_de_erro_sem_injecao_html(arquivos):
@@ -155,14 +160,17 @@ def test_css_preserva_hidden_e_foco(arquivos):
     assert "display: none !important" in css
     assert ":focus-visible" in css
 
-
-def test_status_acessivel_e_sem_resultado_ficticio(arquivos):
+def test_status_acessivel_e_integracao_real(arquivos):
     elementos, _, js = arquivos
 
     assert any(
-        a.get("id") == "form-status"
-        and a.get("aria-live") == "polite"
-        for _, a in elementos
+        atributos.get("id") == "form-status"
+        and atributos.get("aria-live") == "polite"
+        for _, atributos in elementos
     )
 
-    assert "predição serão feitas pela API" in js
+    assert 'fetch("/api/predict"' in js
+    assert "Estimativa calculada com sucesso." in js
+    assert "resultadoLogS.textContent" in js
+    assert "listaAvisos.appendChild(item)" in js
+

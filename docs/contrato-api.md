@@ -347,3 +347,65 @@ Essas decisões deverão ser incorporadas ao contrato antes da conclusão da int
 **Projeto:** Predição de Solubilidade em Metanol.
 
 **Tecnologia da API:** FastAPI e Pydantic.
+
+
+## Interface web integrada — C27
+
+A aplicação FastAPI disponibiliza frontend e API
+na mesma origem HTTP.
+
+Para iniciar:
+
+```bash
+python -m uvicorn app.main:app --reload
+```
+
+Endereços:
+- / — redireciona para /frontend/
+- /frontend/ — interface web
+- /frontend/styles.css — folha de estilos
+- /frontend/app.js — JavaScript
+- /api/predict — predição por POST
+- /api/health — disponibilidade
+- /api/model-info — metadados do modelo
+- /docs — documentação OpenAPI
+
+O frontend envia JSON para /api/predict:
+
+```json
+{
+  "smiles": "CCO",
+  "temperature_c": 25
+}
+```
+
+A temperatura deve ser informada.
+Não há temperatura padrão assumida pelo frontend.
+
+A interface exibe:
+- Estado de carregamento durante a requisição.
+- Resultado estimado de LogS(mol/L).
+- Temperatura em Celsius e Kelvin.
+- Versão do modelo utilizado.
+- Avisos de limitações e extrapolação.
+- Mensagens estruturadas de erro.
+
+Ao modificar os campos durante uma requisição,
+o navegador cancela a solicitação anterior e
+não mostra o resultado desatualizado.
+
+O frontend utiliza textContent para inserir
+valores recebidos, evitando interpretá-los como HTML.
+
+A aplicação não armazena histórico de predições
+em banco de dados nem no navegador.
+
+A API carrega o artefato previamente treinado
+e não executa treinamento durante as requisições.
+
+O valor apresentado é uma estimativa estatística,
+não uma medição experimental.
+
+Para a demonstração real, a máquina deve possuir
+o ridge-v1.joblib original do C23 e um ambiente
+de bibliotecas compatível com seus metadados.

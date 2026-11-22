@@ -123,7 +123,8 @@ def test_smiles_obrigatorio_com_ajuda(pagina):
     assert estrutura.buscar_id("ajuda-smiles")[0] == "p"
 
 
-def test_temperatura_opcional_sem_padrao_antecipado(pagina):
+
+def test_temperatura_obrigatoria_sem_padrao_automatico(pagina):
     _, estrutura = pagina
 
     _, campo = estrutura.buscar_id("temperature_c")
@@ -132,8 +133,10 @@ def test_temperatura_opcional_sem_padrao_antecipado(pagina):
     assert campo["type"] == "number"
     assert campo["step"] == "any"
 
+    # Exigida pela interface, mas sem valor assumido.
+    assert "required" in campo
     assert "value" not in campo
-    assert "required" not in campo
+
 
 
 def test_botao_desabilitado_ate_integracao(pagina):

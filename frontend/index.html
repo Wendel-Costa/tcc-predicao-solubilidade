@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="pt-BR">
 <head>
@@ -16,46 +15,42 @@
   <header>
     <p>Projeto de TCC · Predição de solubilidade</p>
     <h1>Solubilidade de compostos orgânicos em metanol</h1>
-    <p>Informe a estrutura molecular no formato SMILES e, opcionalmente, a temperatura em graus Celsius.</p>
+    <p>Informe a estrutura molecular no formato SMILES e a temperatura em graus Celsius para obter uma estimativa.</p>
   </header>
 
   <main id="conteudo">
     <section aria-labelledby="titulo-formulario">
       <h2 id="titulo-formulario">Dados da molécula</h2>
-      <p id="orientacao-formulario">Apenas metanol puro é considerado como solvente. A temperatura padrão ainda não foi definida.</p>
+      <p id="orientacao-formulario">Apenas metanol puro é considerado como solvente. A temperatura padrão ainda não foi
+        definida.</p>
 
       <form id="predict-form" aria-describedby="orientacao-formulario">
         <div>
           <label for="smiles">SMILES da molécula (obrigatório)</label>
-          <input
-            id="smiles"
-            name="smiles"
-            type="text"
-            placeholder="Ex.: CCO"
-            autocomplete="off"
-            autocapitalize="off"
-            spellcheck="false"
-            aria-describedby="ajuda-smiles"
-            required
-          >
+          <input id="smiles" name="smiles" type="text" placeholder="Ex.: CCO" autocomplete="off" autocapitalize="off"
+            spellcheck="false" aria-describedby="ajuda-smiles" required>
           <p id="ajuda-smiles">Exemplo: <code>CCO</code> representa o etanol.</p>
         </div>
 
         <div>
-          <label for="temperature_c">Temperatura (°C) — opcional</label>
-          <input
-            id="temperature_c"
-            name="temperature_c"
-            type="number"
-            step="any"
-            inputmode="decimal"
-            aria-describedby="ajuda-temperatura"
-          >
-          <p id="ajuda-temperatura">Deixe em branco até que o padrão de temperatura seja definido no protocolo científico.</p>
+          <label for="temperature_c">
+            Temperatura (°C) — obrigatória para predição
+          </label>
+          <input id="temperature_c" name="temperature_c" type="number" step="any" inputmode="decimal"
+            aria-describedby="ajuda-temperatura" required>
+          <p id="ajuda-temperatura">
+            Exemplo: 25 °C. Nenhuma temperatura é assumida automaticamente.
+            Temperaturas fora da faixa observada no treinamento podem gerar avisos.
+          </p>
         </div>
 
-        <button id="predict-button" type="submit" disabled>Calcular estimativa</button>
-        <p id="form-status" role="status" aria-live="polite">Formulário demonstrativo: a predição será ativada após a integração com a API.</p>
+
+        <button id="predict-button" type="submit" disabled>
+          Calcular estimativa
+        </button>
+        <p id="form-status" role="status" aria-live="polite">
+          Preencha o SMILES e a temperatura para calcular a estimativa.
+        </p>
       </form>
     </section>
 

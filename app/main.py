@@ -1,6 +1,12 @@
 
 """Entrada da API de solubilidade em metanol (C18)."""
 
+
+from pathlib import Path
+
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import RedirectResponse
+
 from fastapi import Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.exception_handlers import (
@@ -44,6 +50,35 @@ app = FastAPI(
     ),
     version="0.1.0",
 )
+
+# C27 — Frontend servido na mesma origem da API.
+
+FRONTEND_DIR = (
+    Path(__file__).resolve().parents[1]
+    / "frontend"
+)
+
+app.mount(
+    "/frontend",
+    StaticFiles(
+        directory=FRONTEND_DIR,
+        html=True,
+    ),
+    name="frontend",
+)
+
+
+@app.get(
+    "/",
+    include_in_schema=False,
+)
+def pagina_inicial():
+    """Redireciona a página inicial para o frontend."""
+
+    return RedirectResponse(
+        url="/frontend/",
+        status_code=307,
+    )
 
 logger = logging.getLogger(__name__)
 
