@@ -10,12 +10,12 @@ Protótipo acadêmico de Trabalho de Conclusão de Curso (TCC) para estimar a so
 
 - Aplicação web e API integradas: **implementadas** (C27).
 - Modelo selecionado: **`ridge-v1`**, um `Pipeline(StandardScaler, Ridge(alpha=1.0))`, ajustado somente com o conjunto de treino do C14 (C23).
-- Testes de software: **284 aprovados e 1 aviso não bloqueante** registrados em 22/11/2026 no C30. O C31 acrescenta **14 testes de documentação** (total projetado: 298); confirme a contagem ao executar a suíte no seu ambiente.
+- Testes de software: **284 aprovados** no C30, em 22/11/2026. A finalização acrescenta testes de documentação e de entrega; execute `python -m pytest -q` para verificar a contagem no seu ambiente.
 - Avaliação final reservada por molécula: **realizada uma única vez** no C30. Veja [o relatório científico](reports/avaliacao_final_c30/relatorio.md).
 
 ## Início rápido — executar a aplicação
 
-Os comandos devem ser executados **na raiz do repositório**. Para demonstrar a API com o mesmo `ridge-v1` publicado, é necessário obter **separadamente um arquivo Joblib original, confiável e compatível**: ele não é distribuído pelo Git.
+Os comandos devem ser executados **na raiz do repositório**. Para demonstrar a API com o mesmo `ridge-v1` publicado, é necessário obter **separadamente um arquivo Joblib original, confiável e compatível**: por padrão, ele não é distribuído pelo Git. Para a implantação em nuvem há uma exceção opcional, consciente e limitada ao artefato `ridge-v1.joblib`, descrita no guia de implantação.
 
 ```bash
 git clone https://github.com/Wendel-Costa/tcc-predicao-solubilidade.git
@@ -119,7 +119,7 @@ scripts/           # Curadoria, partição, treino e avaliações offline
 tests/             # Testes unitários, de contrato e de integração
 docs/              # Contrato, protocolo, diagramas e guia de reprodução
 data/              # Orientações; CSVs reais locais excluídos do Git
-artifacts/         # Metadados versionados; Joblib original fora do Git
+artifacts/         # Metadados; Joblib ignorado por padrão (exceção opcional para deploy)
 reports/           # Relatórios científicos agregados e gráficos
 ```
 
@@ -128,3 +128,17 @@ reports/           # Relatórios científicos agregados e gráficos
 Projeto desenvolvido por **Wendel, Erika e Gabriel**, com contribuições distribuídas entre dados e aprendizado de máquina, API, frontend, documentação e validação.
 
 Ao utilizar o BigSolDB, cite o conjunto de dados e a publicação científica associados, conforme a [documentação da fonte](data/README.md). Verifique separadamente as licenças dos dados e do código antes de redistribuição ou uso externo.
+
+
+## Implantação na nuvem e entrega final
+
+O aplicativo pode ser publicado com **FastAPI + frontend no mesmo endereço**. A opção documentada para o TCC é **Render com Docker**; também é possível avaliar Vercel ou Railway, respeitando as limitações de runtime e das dependências científicas.
+
+- [Guia de implantação no Render e alternativas](docs/implantacao.md)
+- [Checklist de validação e demonstração final](docs/checklist-entrega.md)
+- Dependências exatas do modelo para contêiner: `requirements-deploy.txt`
+- Execute `python -m scripts.verificar_deploy --url http://127.0.0.1:8000` após iniciar a API localmente; use a URL publicada depois da implantação.
+
+**Atenção à redistribuição:** o modelo original é excluído do Git por padrão. Publicá-lo no repositório exige decisão expressa da equipe sobre direitos/licenças de distribuição. Jamais publique CSVs, tokens ou segredos. A verificação de integridade SHA-256 não substitui a verificação da origem confiável de um arquivo Joblib.
+
+Antes de apresentar resultados científicos, distinga a validação interna (C23) da avaliação final retida por molécula (C30). A avaliação final **já ocorreu uma vez** e não deve ser refeita para selecionar novas variantes do modelo.

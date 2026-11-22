@@ -1,0 +1,11 @@
+# Versões registradas em artifacts/ridge-v1.metadata.json (C23).
+# NÃO substituir por requirements.txt de faixas ao carregar o mesmo Joblib.
+numpy==2.5.4
+pandas==3.1.1
+rdkit==2026.9.2
+scikit-learn==1.9.1
+joblib==1.6.0
+# Requisitos diretos do servidor, sem treino, gráficos ou Pytest.
+fastapi==0.165.0
+pydantic==2.14.4
+uvicorn==0.54.0
