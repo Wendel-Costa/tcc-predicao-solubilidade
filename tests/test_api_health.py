@@ -108,5 +108,6 @@ def test_openapi_documenta_health_e_503(client):
     # A resposta HTTP 503 deve permanecer documentada.
     assert "503" in respostas_health
 
-    # O endpoint de predição será implementado no C25.
-    assert "/api/predict" not in rotas
+    # A rota de predição foi implementada no C25.
+    assert "/api/predict" in rotas
+    assert "post" in rotas["/api/predict"]

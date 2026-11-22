@@ -152,7 +152,7 @@ Exemplo:
 | Campo | Tipo | Obrigatório | Descrição |
 |---|---|---|---|
 | smiles | string | Sim | Estrutura molecular no formato SMILES. |
-| temperature_c | number | Não | Temperatura em graus Celsius. Padrão inicial de 25 °C. |
+| temperature_c | number ou null | Não no schema | Temperatura em graus Celsius. Necessária para realizar a predição nesta versão; não existe padrão automático aprovado. |
 
 ### Regras de validação
 
@@ -168,9 +168,14 @@ Exemplo:
 - Deverá ser um valor numérico finito.
 - Não poderá representar uma temperatura igual ou inferior ao zero absoluto.
 - O valor informado deverá ser convertido para Kelvin.
-- Deverá respeitar a faixa de aplicação aprovada pelo protocolo científico.
+- A faixa observada no treinamento não equivale a uma faixa
+  de aplicação cientificamente validada.
+- Enquanto não existir uma definição formal do domínio de
+  aplicação, temperaturas fora da faixa observada serão
+  acompanhadas de um aviso de extrapolação.
+- No C25, a temperatura omitida ou explicitamente nula
+  produz HTTP 422 com código `invalid_temperature`.
 
-A faixa definitiva de aplicação dependerá da auditoria e da análise do conjunto de dados de metanol.
 
 ### Conversão da temperatura
 
@@ -233,6 +238,33 @@ Formato:
 A API deverá apresentar mensagens compreensíveis e não deverá expor stack traces ao usuário.
 
 Falhas internas poderão ser registradas nos logs do servidor para auxiliar a depuração.
+
+### Situação de implementação no C25
+
+O endpoint POST /api/predict já utiliza o pipeline Ridge
+integrado no C24.
+
+Entradas válidas retornam HTTP 200 com a estimativa real.
+
+Quando o modelo está indisponível, retorna HTTP 503
+com `error.code = "model_unavailable"`.
+
+Quando não há temperatura informada, retorna HTTP 422
+com `error.code = "invalid_temperature"`.
+
+Neste commit, erros de validação automática do Pydantic
+ainda utilizam o corpo padrão do FastAPI, contendo
+o campo `detail`.
+
+A uniformização dessas respostas para o formato
+`{"error": {"code": "...", "message": "..."}}`
+será implementada no C26.
+
+O backend não assume 25 °C automaticamente.
+A temperatura deve ser informada para predição.
+
+A rota não treina modelos nem acessa o conjunto
+reservado para teste final.
 
 ---
 

@@ -1,7 +1,14 @@
 
 """Entrada da API de solubilidade em metanol (C18)."""
 
-from app.predictor import obter_predictor
+from app.predictor import (
+    EntradaInvalida,
+    PredicaoFalhou,
+    Predictor,
+    obter_predictor,
+)
+
+import logging
 
 from typing import Annotated, Literal
 
@@ -14,6 +21,8 @@ from app.schemas import (
     ErrorDetail,
     ErrorResponse,
     ModelInfoResponse,
+    PredictRequest,
+    PredictResponse,
 )
 
 # Cria a aplicação FastAPI.
@@ -26,6 +35,7 @@ app = FastAPI(
     version="0.1.0",
 )
 
+logger = logging.getLogger(__name__)
 
 class HealthStatus(BaseModel):
     """Estrutura da resposta do endpoint health."""
@@ -135,3 +145,110 @@ def model_info(
         )
 
     return metadados
+
+# C25 — Endpoint HTTP de predição.
+# O pipeline já foi treinado offline no C23.
+
+def resposta_erro_predict(
+    codigo: str,
+    mensagem: str,
+    codigo_http: int,
+) -> JSONResponse:
+    """Produz resposta de erro conforme o contrato da API."""
+
+    erro = ErrorResponse(
+        error=ErrorDetail(
+            code=codigo,
+            message=mensagem,
+        )
+    )
+
+    return JSONResponse(
+        status_code=codigo_http,
+        content=erro.model_dump(),
+    )
+
+
+@app.post(
+    "/api/predict",
+    response_model=PredictResponse,
+    responses={
+        422: {
+            "description": (
+                "Campos inválidos (validação FastAPI/Pydantic) "
+                "ou temperatura ausente (ErrorResponse)."
+            ),
+        },
+        503: {
+            "model": ErrorResponse,
+            "description": "Modelo de predição indisponível.",
+        },
+        500: {
+            "model": ErrorResponse,
+            "description": "Erro inesperado na predição.",
+        },
+    },
+    tags=["predição"],
+)
+def predict(
+    pedido: PredictRequest,
+    modelo: Annotated[
+        Predictor | None,
+        Depends(obter_predictor),
+    ],
+) -> PredictResponse | JSONResponse:
+    """Estima a solubilidade em metanol usando o modelo carregado."""
+
+    # Ainda não há temperatura padrão aprovada.
+    if pedido.temperature_c is None:
+        return resposta_erro_predict(
+            codigo="invalid_temperature",
+            mensagem=(
+                "Informe temperature_c em graus Celsius; "
+                "ainda não há padrão automático."
+            ),
+            codigo_http=status.HTTP_422_UNPROCESSABLE_CONTENT,
+        )
+
+    # Não tentamos treinar ou criar um modelo na requisição.
+    if modelo is None:
+        return resposta_erro_predict(
+            codigo="model_unavailable",
+            mensagem="Modelo de predição indisponível.",
+            codigo_http=status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+
+    try:
+        # Utiliza exclusivamente o predictor do C24.
+        return modelo.prever(pedido)
+
+    except EntradaInvalida as erro:
+        return resposta_erro_predict(
+            codigo="invalid_temperature",
+            mensagem=str(erro),
+            codigo_http=status.HTTP_422_UNPROCESSABLE_CONTENT,
+        )
+
+    except PredicaoFalhou:
+        # Não registra o SMILES nem detalhes internos na resposta.
+        logger.exception(
+            "Falha no processamento da predição"
+        )
+
+        return resposta_erro_predict(
+            codigo="prediction_failed",
+            mensagem="Não foi possível realizar a predição.",
+            codigo_http=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+    except Exception:
+        # Evita expor stack traces ao cliente.
+        logger.exception(
+            "Falha inesperada no predictor"
+        )
+
+        return resposta_erro_predict(
+            codigo="prediction_failed",
+            mensagem="Não foi possível realizar a predição.",
+            codigo_http=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
