@@ -2,6 +2,9 @@
 
 [![Python](https://img.shields.io/badge/Python-3.14-blue)](https://www.python.org/)
 
+**Aplicação pública (Render):** [Acessar predição de solubilidade em metanol](https://tcc-predicao-solubilidade.onrender.com/frontend/)
+**API/documentação:** [Health](https://tcc-predicao-solubilidade.onrender.com/api/health) · [Metadados](https://tcc-predicao-solubilidade.onrender.com/api/model-info) · [Swagger](https://tcc-predicao-solubilidade.onrender.com/docs)
+
 Protótipo acadêmico de Trabalho de Conclusão de Curso (TCC) para estimar a solubilidade de compostos orgânicos em **metanol puro**, usando uma estrutura molecular em **SMILES** e uma **temperatura em graus Celsius**. O backend FastAPI calcula descritores com RDKit, aplica um pipeline de regressão Ridge previamente treinado e apresenta uma estimativa em uma interface HTML/CSS/JavaScript.
 
 > **Limitação:** a saída é uma **estimativa estatística**, não uma medição experimental. O projeto é de caráter acadêmico e não deve ser usado isoladamente para decisões de segurança ou processos químicos críticos.
@@ -10,12 +13,12 @@ Protótipo acadêmico de Trabalho de Conclusão de Curso (TCC) para estimar a so
 
 - Aplicação web e API integradas: **implementadas** (C27).
 - Modelo selecionado: **`ridge-v1`**, um `Pipeline(StandardScaler, Ridge(alpha=1.0))`, ajustado somente com o conjunto de treino do C14 (C23).
-- Testes de software: **284 aprovados** no C30, em 22/11/2026. A finalização acrescenta testes de documentação e de entrega; execute `python -m pytest -q` para verificar a contagem no seu ambiente.
+- Testes de software: **310 aprovados** na suíte completa em 22/11/2026 (resultado observado no sistema Linux da equipe, com 1 aviso não bloqueante de depreciação do Starlette). Execute `python -m pytest -q` para verificar a contagem no seu ambiente.
 - Avaliação final reservada por molécula: **realizada uma única vez** no C30. Veja [o relatório científico](reports/avaliacao_final_c30/relatorio.md).
 
 ## Início rápido — executar a aplicação
 
-Os comandos devem ser executados **na raiz do repositório**. Para demonstrar a API com o mesmo `ridge-v1` publicado, é necessário obter **separadamente um arquivo Joblib original, confiável e compatível**: por padrão, ele não é distribuído pelo Git. Para a implantação em nuvem há uma exceção opcional, consciente e limitada ao artefato `ridge-v1.joblib`, descrita no guia de implantação.
+Os comandos devem ser executados **na raiz do repositório**. Para executar **localmente** a API com o mesmo `ridge-v1` publicado, é necessário obter separadamente o arquivo Joblib original, confiável e compatível: ele **não é distribuído pelo Git**. Na implantação do Render, o binário é reconstruído durante o build a partir de um **Secret File Base64** configurado no painel, sem incluí-lo no repositório. Consulte o [guia de implantação](docs/implantacao.md).
 
 ```bash
 git clone https://github.com/Wendel-Costa/tcc-predicao-solubilidade.git
@@ -119,7 +122,7 @@ scripts/           # Curadoria, partição, treino e avaliações offline
 tests/             # Testes unitários, de contrato e de integração
 docs/              # Contrato, protocolo, diagramas e guia de reprodução
 data/              # Orientações; CSVs reais locais excluídos do Git
-artifacts/         # Metadados; Joblib ignorado por padrão (exceção opcional para deploy)
+artifacts/         # Metadados versionados; Joblib original fora do Git
 reports/           # Relatórios científicos agregados e gráficos
 ```
 
@@ -132,13 +135,15 @@ Ao utilizar o BigSolDB, cite o conjunto de dados e a publicação científica as
 
 ## Implantação na nuvem e entrega final
 
-O aplicativo pode ser publicado com **FastAPI + frontend no mesmo endereço**. A opção documentada para o TCC é **Render com Docker**; também é possível avaliar Vercel ou Railway, respeitando as limitações de runtime e das dependências científicas.
+O aplicativo **está publicado** em **Render com Docker**, com FastAPI e frontend na mesma origem: **https://tcc-predicao-solubilidade.onrender.com/frontend/**. A verificação de implantação realizada pela equipe passou para frontend, Health, metadados e predição `CCO`/25 °C; esse resultado não substitui monitoramento contínuo. Também seria possível avaliar Vercel ou Railway, mas exigiria outra configuração e novos testes de implantação.
 
 - [Guia de implantação no Render e alternativas](docs/implantacao.md)
 - [Checklist de validação e demonstração final](docs/checklist-entrega.md)
 - Dependências exatas do modelo para contêiner: `requirements-deploy.txt`
-- Execute `python -m scripts.verificar_deploy --url http://127.0.0.1:8000` após iniciar a API localmente; use a URL publicada depois da implantação.
+- Execução local: `python -m scripts.verificar_deploy --url http://127.0.0.1:8000`.
+- Implantação publicada: `python -m scripts.verificar_deploy --url https://tcc-predicao-solubilidade.onrender.com`.
+- O plano gratuito pode suspender o serviço após inatividade; o próximo acesso provoca a retomada automática e pode demorar mais que um acesso normal.
 
-**Atenção à redistribuição:** o modelo original é excluído do Git por padrão. Publicá-lo no repositório exige decisão expressa da equipe sobre direitos/licenças de distribuição. Jamais publique CSVs, tokens ou segredos. A verificação de integridade SHA-256 não substitui a verificação da origem confiável de um arquivo Joblib.
+**Proteção e licenças:** o modelo original permanece **fora do GitHub**, e o Render recebe somente seu conteúdo Base64 como arquivo secreto configurado no serviço. Base64 é codificação, não criptografia, e o modelo reconstruído está presente na imagem de implantação; isso não dispensa a revisão das licenças nem autorização para redistribuição. Jamais publique CSVs, tokens ou segredos. A verificação SHA-256 não autentica a origem de um Joblib.
 
 Antes de apresentar resultados científicos, distinga a validação interna (C23) da avaliação final retida por molécula (C30). A avaliação final **já ocorreu uma vez** e não deve ser refeita para selecionar novas variantes do modelo.

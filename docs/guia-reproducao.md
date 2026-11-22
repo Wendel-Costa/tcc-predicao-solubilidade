@@ -4,7 +4,6 @@ Este guia distingue duas atividades que **não devem ser confundidas**: (A) **ex
 
 ## 1. Requisitos
 
-- Fedora/Linux (ambiente utilizado pela equipe); outros sistemas podem exigir ajustes de instalação.
 - Python **3.14**; a máquina que gerou o Joblib original usou **3.14.8**.
 - Git, conexão para instalar dependências, acesso aos arquivos de dados permitidos e, para a demonstração original, ao Joblib confiável gerado pela equipe.
 - Executar todos os comandos a partir da raiz do repositório.
@@ -173,9 +172,9 @@ O comando `python -m scripts.avaliar_teste_final --confirmar-avaliacao-final` de
 
 Arquivos locais que **não** devem ser publicados em commits de reprodução: CSVs brutos/processados, Joblib/Pickle e quaisquer credenciais. Versionar código, metadados revisados, hashes, documentação, testes e métricas agregadas autorizadas. Evitar registrar SMILES individuais de usuários em logs sem necessidade.
 
-A aplicação é um protótipo acadêmico, sem autenticação e sem infraestrutura de produção. Para publicação na internet, seria necessária uma revisão adicional de exposição do serviço, recursos e segurança.
+A aplicação é um protótipo acadêmico, sem autenticação e **já publicado no Render para demonstração**; isso não equivale a infraestrutura de alta disponibilidade, validação industrial ou auditoria de segurança. Para uso não acadêmico, ainda seriam necessárias revisões de exposição do serviço, recursos e segurança.
 
 
 ## 5. Publicação em nuvem
 
-A execução local e a implantação pública têm requisitos de distribuição distintos. Consulte o [guia de implantação](implantacao.md) para o Render com Docker e para o procedimento opcional de versionamento autorizado do único Joblib. Os dados experimentais brutos e processados permanecem excluídos do Git.
+A execução local e a implantação pública têm requisitos de distribuição distintos. **Aplicação publicada:** <https://tcc-predicao-solubilidade.onrender.com/frontend/>. Consulte o [guia de implantação](implantacao.md) para o Render com Docker e o **Secret File Base64 do Joblib**, que permanece fora do GitHub. Os dados experimentais brutos e processados permanecem excluídos do Git. O fato de usar um arquivo secreto não dispensa revisar licenças e permissões de distribuição.
