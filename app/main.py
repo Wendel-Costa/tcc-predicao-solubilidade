@@ -1,6 +1,8 @@
 
 """Entrada da API de solubilidade em metanol (C18)."""
 
+from app.predictor import obter_predictor
+
 from typing import Annotated, Literal
 
 from fastapi import Depends, FastAPI, Response, status
@@ -34,14 +36,14 @@ class HealthStatus(BaseModel):
 
 
 def consultar_estado_modelo() -> tuple[bool, str | None]:
-    """Ponto de integração com o predictor, previsto para C24.
+    """Consulta a disponibilidade real do predictor."""
 
-    Até a integração, não existe um artefato carregado
-    pela API. A existência de scripts de treinamento
-    não significa que um modelo esteja disponível.
-    """
-    return False, None
+    modelo = obter_predictor()
 
+    if modelo is None:
+        return False, None
+
+    return True, modelo.info.model_version
 
 @app.get(
     "/api/health",
@@ -87,15 +89,14 @@ def health(
 
 
 def consultar_metadados_modelo() -> ModelInfoResponse | None:
-    """Consulta os metadados do modelo integrado.
+    """Retorna os metadados do artefato carregado."""
 
-    Integração real prevista para o C24.
+    modelo = obter_predictor()
 
-    Enquanto não existir um artefato carregado e validado,
-    a API não disponibiliza informações fictícias.
-    """
-    return None
+    if modelo is None:
+        return None
 
+    return modelo.info
 
 @app.get(
     "/api/model-info",

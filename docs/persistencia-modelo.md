@@ -96,3 +96,90 @@ da avaliação final reservada e da análise de erros.
 A faixa de temperaturas de treinamento não deve
 ser confundida com uma garantia de validade
 preditiva em todo o intervalo.
+
+## C24 — Carregamento e inferência
+
+O módulo `app/predictor.py` carrega o pipeline Ridge
+gerado no C23, sem realizar treinamento.
+
+### Pré-requisitos
+
+Os seguintes arquivos devem existir no mesmo diretório:
+
+- `artifacts/ridge-v1.joblib`
+- `artifacts/ridge-v1.metadata.json`
+
+O arquivo binário não é incluído no Git.
+Deve ser disponibilizado por uma fonte interna
+confiável e conferido com os metadados.
+
+### Validação do carregamento
+
+O serviço verifica:
+
+- Presença dos dois arquivos.
+- Ausência de links simbólicos nos arquivos esperados.
+- Estrutura dos metadados.
+- SHA-256 do modelo.
+- Compatibilidade das versões de software.
+- Ordem e quantidade dos dez atributos.
+- Pipeline ajustado com StandardScaler e Ridge.
+- Correspondência entre pipeline e metadados.
+
+A verificação de SHA-256 detecta diferenças em
+relação ao arquivo registrado, mas não garante
+autenticidade caso o binário e os metadados
+tenham sido adulterados juntos.
+
+Por isso, nunca carregar arquivos joblib de
+origem desconhecida.
+
+### Verificação manual
+
+```bash
+python -m app.predictor
+```
+
+A execução bem-sucedida confirma a disponibilidade
+do artefato e seus metadados.
+
+### Temperatura
+
+O predictor recebe temperatura em Celsius e a
+converte para Kelvin por meio de PredictRequest.
+
+Enquanto não houver padrão experimental aprovado,
+temperatura omitida provoca EntradaInvalida.
+
+Uma temperatura fora da faixa observada no
+treinamento gera aviso de extrapolação.
+
+### Execução na API
+
+O modelo é carregado sob demanda e reutilizado
+no mesmo processo por meio de cache.
+
+Se o artefato estiver ausente ou incompatível:
+
+- GET /api/health retorna HTTP 503.
+- GET /api/model-info retorna HTTP 503.
+
+Quando estiver disponível:
+
+- GET /api/health retorna HTTP 200.
+- GET /api/model-info retorna HTTP 200 com metadados reais.
+
+Após instalar ou substituir um artefato, reiniciar
+o processo da API para atualizar o cache.
+
+A rota POST /api/predict será implementada no C25.
+
+### Limitações
+
+As métricas registradas pertencem à validação
+interna agrupada anterior ao reajuste final.
+
+Elas não representam avaliação no teste final.
+
+O serviço produz estimativas estatísticas,
+não medições experimentais.

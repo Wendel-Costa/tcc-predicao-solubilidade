@@ -18,7 +18,11 @@ def client():
 
 
 def test_health_degradado_sem_modelo(client):
-    """Sem artefato integrado, deve responder HTTP 503."""
+    """Simula a indisponibilidade do modelo."""
+
+    app.dependency_overrides[
+        consultar_estado_modelo
+    ] = lambda: (False, None)
 
     resposta = client.get("/api/health")
 

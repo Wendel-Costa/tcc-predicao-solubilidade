@@ -13,6 +13,7 @@ from pydantic import ValidationError
 from app.chemistry import FEATURE_NAMES
 from app.main import (
     app,
+    consultar_estado_modelo,
     consultar_metadados_modelo,
 )
 from app.schemas import ModelInfoResponse
@@ -58,6 +59,12 @@ def metadados_sinteticos():
 
 
 def test_model_info_sem_artefato_retorna_503(client):
+    """Simula metadados indisponíveis."""
+
+    app.dependency_overrides[
+        consultar_metadados_modelo
+    ] = lambda: None
+
     resposta = client.get("/api/model-info")
 
     assert resposta.status_code == 503
@@ -87,8 +94,15 @@ def test_model_info_simulado_apenas_em_teste(client):
 
 
 def test_health_permanece_degradado(client):
+    """Confere o Health quando não há modelo."""
+
+    app.dependency_overrides[
+        consultar_estado_modelo
+    ] = lambda: (False, None)
+
     resposta = client.get("/api/health")
 
+    assert resposta.status_code == 503
     assert resposta.json()["model_available"] is False
 
 
