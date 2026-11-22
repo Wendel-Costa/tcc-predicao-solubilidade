@@ -156,33 +156,36 @@ def test_temperatura_omitida_422(
 
     assert modelo_fake.chamadas == []
 
-
 @pytest.mark.parametrize(
-    "dados",
+    ("dados", "codigo_esperado"),
     [
-        {
-            "smiles": "C1(",
-            "temperature_c": 25,
-        },
-        {
-            "smiles": "",
-            "temperature_c": 25,
-        },
-        {
-            "smiles": "CCO",
-            "temperature_c": -273.15,
-        },
-        {
-            "smiles": "CCO",
-            "temperature_c": 25,
-            "solvent": "water",
-        },
+        (
+            {"smiles": "C1(", "temperature_c": 25},
+            "invalid_smiles",
+        ),
+        (
+            {"smiles": "", "temperature_c": 25},
+            "invalid_smiles",
+        ),
+        (
+            {"smiles": "CCO", "temperature_c": -273.15},
+            "invalid_temperature",
+        ),
+        (
+            {
+                "smiles": "CCO",
+                "temperature_c": 25,
+                "solvent": "water",
+            },
+            "invalid_request",
+        ),
     ],
 )
 def test_campos_invalidos_422(
     client,
     modelo_fake,
     dados,
+    codigo_esperado,
 ):
     app.dependency_overrides[
         obter_predictor
@@ -195,11 +198,11 @@ def test_campos_invalidos_422(
 
     assert resposta.status_code == 422
 
-    # Até C26, campos inválidos seguem o padrão FastAPI.
-    assert "detail" in resposta.json()
+    assert resposta.json()["error"]["code"] == codigo_esperado
+
+    assert "detail" not in resposta.json()
 
     assert modelo_fake.chamadas == []
-
 
 def test_get_nao_permitido(client):
     resposta = client.get("/api/predict")

@@ -252,10 +252,6 @@ com `error.code = "model_unavailable"`.
 Quando não há temperatura informada, retorna HTTP 422
 com `error.code = "invalid_temperature"`.
 
-Neste commit, erros de validação automática do Pydantic
-ainda utilizam o corpo padrão do FastAPI, contendo
-o campo `detail`.
-
 A uniformização dessas respostas para o formato
 `{"error": {"code": "...", "message": "..."}}`
 será implementada no C26.
@@ -265,6 +261,60 @@ A temperatura deve ser informada para predição.
 
 A rota não treina modelos nem acessa o conjunto
 reservado para teste final.
+
+### Implementação C26 — Erros padronizados
+
+O endpoint POST /api/predict utiliza o formato:
+
+```json
+{
+  "error": {
+    "code": "invalid_smiles",
+    "message": "A estrutura SMILES informada não é válida."
+  }
+}
+```
+
+Erros tratados:
+
+- HTTP 422 / invalid_smiles:
+  SMILES ausente, vazio ou inválido.
+
+- HTTP 422 / invalid_temperature:
+  temperatura inválida, não numérica,
+  não finita ou ausente.
+
+- HTTP 422 / invalid_request:
+  JSON inválido, corpo inadequado,
+  campos adicionais proibidos ou
+  múltiplos campos incorretos.
+
+- HTTP 404 / invalid_request:
+  endpoint inexistente sob /api/.
+
+- HTTP 405 / invalid_request:
+  método HTTP não permitido em /api/.
+
+- HTTP 503 / model_unavailable:
+  modelo não disponível para predição.
+
+- HTTP 500 / prediction_failed:
+  falha interna durante a predição.
+
+As mensagens de validação não incluem o corpo
+original da requisição nem detalhes das exceções.
+
+As respostas automáticas de validação do FastAPI
+são padronizadas especificamente em /api/predict.
+Os demais endpoints mantêm suas regras próprias.
+
+O cabeçalho Allow é preservado nas respostas HTTP 405.
+
+Temperaturas fora da faixa observada no treinamento
+produzem aviso de extrapolação, não erro HTTP 422.
+
+A temperatura omitida continua inválida para
+predição: não há padrão automático aprovado.
 
 ---
 
