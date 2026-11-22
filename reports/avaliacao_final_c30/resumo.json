@@ -1,0 +1,59 @@
+{
+  "protocolo": "C30_teste_final_unico_por_molecula",
+  "data_utc": "2026-11-22",
+  "modelo": {
+    "versao": "ridge-v1",
+    "selecionado_antes_do_teste": true
+  },
+  "fonte": {
+    "dataset": "BigSolDB",
+    "versao": "2.0",
+    "doi": "10.5281/zenodo.15094979",
+    "solvente": "methanol",
+    "alvo": "LogS(mol/L)"
+  },
+  "entradas_sha256": {
+    "treino": "0f272a13c2a7c5f0469abf64f098cceec2c82a0c586eae6def1c7491752178d9",
+    "teste": "3a93f9e6f37d890971004527020c862574e08ea6e505e1b04afc99e485d8d99a",
+    "joblib": "f362ca5d4b01e834901bb446a5029b1f9fb7a1636c7e87374dfd1fbb5e96bf5f"
+  },
+  "particao": {
+    "registros_treino": 6619,
+    "moleculas_treino": 678,
+    "registros_teste": 1601,
+    "moleculas_teste": 170,
+    "moleculas_compartilhadas": 0,
+    "registros_origem_compartilhados": 0
+  },
+  "metricas_teste_final": {
+    "mae": 0.7263027355230961,
+    "rmse": 0.9239274666639956,
+    "r2": 0.2558500936906628
+  },
+  "metricas_validacao_interna_c23": {
+    "mae": 0.7971669453887359,
+    "rmse": 0.9781224026843227,
+    "r2": 0.2139214904965785
+  },
+  "analise_de_erros": {
+    "vies_medio_observado_menos_predito": 0.023091319054213782,
+    "mediana_erro_absoluto": 0.5861780714562235,
+    "percentil_90_erro_absoluto": 1.4554496538502264,
+    "mae_media_por_molecula": 0.753855002174834,
+    "faixas_temperatura": {
+      "abaixo_do_treino": {
+        "registros": 0,
+        "mae": null
+      },
+      "dentro_da_faixa_do_treino": {
+        "registros": 1601,
+        "mae": 0.7263027355230961
+      },
+      "acima_do_treino": {
+        "registros": 0,
+        "mae": null
+      }
+    }
+  },
+  "observacao": "Teste final usado uma única vez; não realizar seleção ou reajuste com estes resultados."
+}
